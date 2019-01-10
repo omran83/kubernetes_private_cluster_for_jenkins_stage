@@ -1,0 +1,27 @@
+pipeline{
+    agent any
+    parameters {
+      string(defaultValue: "plan",  name: "action",  description: "Do you want plan/apply/destroy ")
+    }
+    stages{
+        stage("Pull repo"){
+            steps{
+                git 'git@github.com:omran83/terraform01.git'
+            }
+        }
+        stage("Terraform init"){
+            steps{
+                ws("${workspace}/stage/kubernetes_cluster_private"){
+                    sh "terraform init"
+                }
+            }
+        }
+        stage("Terraform Apply"){
+            steps{
+                ws("${workspace}/stage/kubernetes_cluster_private"){
+                    sh "terraform ${action} -auto-approve"
+                }
+            }
+        }
+    }
+}
